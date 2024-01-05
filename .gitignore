@@ -1,4 +1,3 @@
 CVC4/
-./scripts/a.out
-./scripts/gen_dns_base
+scripts/a.out
 .DS_Store

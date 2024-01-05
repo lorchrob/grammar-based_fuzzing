@@ -20,13 +20,11 @@ char *build_sygus_command(const char *str1, const char *str2, const char *str3) 
     return result;
 }
 
-// Copy file at directory 'input_filename' to a f
+// Copy file 'source' to new file 'dest'
 void copy_file(const char *source, const char *destination) {
-    // Construct the cp command
     char command[1024];
     snprintf(command, sizeof(command), "cp %s %s", source, destination);
 
-    // Execute the cp command
     int result = system(command);
     if (result == -1) {
         perror("Error executing cp command");
