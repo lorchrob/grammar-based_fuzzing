@@ -1,3 +1,7 @@
+;; In this version, we omit rdata type field because in is already fully 
+;; and trivially captured
+;; by the constructor in the abstract representation
+
 ;;;; logic
 (set-logic UFLIA)
 ;(set-feature :oracles true)
@@ -48,7 +52,7 @@
 ))
 
 (declare-datatype DNSRDATA (
-  (Data (TYPE Int) (RDLENGTH Int) (RDATA RData))
+  (Data (RDLENGTH Int) (RDATA RData))
 ))
 
 ;;;; grammar
@@ -68,7 +72,7 @@
   ) 
   ; grammar rules
   (
-    (data DNSRDATA                    ((Data int int rdata)))
+    (data DNSRDATA                    ((Data int rdata)))
     (rdata RData                      ((CName dname)
                                        (HInfo str str)
                                        (MInfo dname dname)
@@ -178,27 +182,9 @@
   ))
 )
 
-(define-fun valid_rdata_type ((dns_rdata DNSRDATA)) Bool
-  (match dns_rdata (
-    ((Data type rdlength rdata) 
-      (match rdata (
-        ((CName domain_name) (= type 5)) ;;!! Probably associated with multiple types
-        ((HInfo cpu os) (= type 13))
-        ((MInfo name1 name2) (= type 14))
-        ((MX pref name) (= type 15))
-        ((Null data) (= type 10))
-        ((SOA mname rname serial refresh retry expire minimum) (= type 6))
-        ((TXTDATA txt) (= type 16))
-        ((ADDRESS address) (= type 1))
-        ((WKS address protocol bitmap) (= type 11))
-      ))
-    )
-  ))
-)
-
 (define-fun valid_rdata_lengths ((dns_rdata DNSRDATA)) Bool
   (match dns_rdata (
-    ((Data type rdlength rdata) 
+    ((Data rdlength rdata) 
       (and 
         (= rdlength (rdata_length rdata))
         (match rdata (
@@ -221,15 +207,7 @@
 ; 1. Length fields match actual lengths
 (constraint (valid_rdata_lengths dns_rdata))
 
-; 2. The type field matches the actual type of the rdata
-(constraint (valid_rdata_type dns_rdata))
-
 ;;;; SyGuS synthesis command
-(check-synth)
-(check-synth)
-(check-synth)
-(check-synth)
-(check-synth)
 (check-synth)
 (check-synth)
 (check-synth)

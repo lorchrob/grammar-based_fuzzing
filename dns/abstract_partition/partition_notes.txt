@@ -85,3 +85,7 @@ Separate SyGuS problems, difficulties
   * What if constraints interact? Like constraint 1 mentions <A> and <B>, constraint 2
     mentions <B> and <C>. 
     Clearly, we have to group them into the same SyGuS problem.
+
+Optimizations
+  * Mark dependent fields, i.e., fields that can be calculated from 
+    other fields

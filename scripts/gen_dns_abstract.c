@@ -4,6 +4,17 @@
 
 const char *sygus_command_prefix = "/Users/lorchrob/Documents/CodeProjects/grammar-based_fuzzing/SyGuS-fuzzing/CVC4/build/bin/cvc5 --lang=sygus2";
 
+// Delete sygus temp files when done to clean up
+int delete_file(const char *filename) {
+    if (remove(filename) == 0) {
+        printf("Sygus file '%s' deleted successfully.\n\n", filename);
+        return 0;
+    } else {
+        perror("Error deleting file");
+        return 1; 
+    }
+}
+
 // Given a sygus command prefix, a sygus file to call, and an output file,
 // construct a sygus terminal command
 char *build_sygus_command(const char *str1, const char *str2, const char *str3) {
@@ -55,19 +66,21 @@ int gen_terms(int iterations, const char *sygus_file_dir, const char *sygus_file
     int result = system(sygus_command);
 
     if (result == -1) {
-        perror("Error executing sygus");
+        perror("Error executing sygus\n");
         return 1;
     } else {
-        printf("Sygus command executed successfully.\n\n");
+        printf("Sygus command executed successfully.\n");
     }
+
+    delete_file(sygus_file_dir_temp);
 
     return 0;
 }
 
 int main() {
-    gen_terms(10, "../dns/abstract_partition/dns_base.smt2", "../dns/abstract_partition/dns_base_temp.smt2", "./dns_base_output.txt");
-    gen_terms(10, "../dns/abstract_partition/dns_domain_name.smt2", "../dns/abstract_partition/dns_domain_name_temp.smt2", "./dns_domain_name_output.txt");
-    gen_terms(10, "../dns/abstract_partition/dns_rdata.smt2", "../dns/abstract_partition/dns_rdata_temp.smt2", "./dns_rdata_output.txt");
+    gen_terms(10, "../dns/abstract_partition/dns_base.smt2", "../dns/abstract_partition/dns_base_temp.smt2", "./results/dns_base_output.txt");
+    gen_terms(10, "../dns/abstract_partition/dns_domain_name.smt2", "../dns/abstract_partition/dns_domain_name_temp.smt2", "./results/dns_domain_name_output.txt");
+    gen_terms(10, "../dns/abstract_partition/dns_rdata_v2.smt2", "../dns/abstract_partition/dns_rdata_temp.smt2", "./results/dns_rdata_output.txt");
 
     return 0;
 }

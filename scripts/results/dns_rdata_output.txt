@@ -1,0 +1,45 @@
+(
+(define-fun dns_rdata () DNSRDATA (Data 0 (Null Nil)))
+)
+(
+(define-fun dns_rdata () DNSRDATA (Data 0 (TXTDATA Nil2)))
+)
+(
+(define-fun dns_rdata () DNSRDATA (Data 1 (Null (Cons 0 Nil))))
+)
+(
+(define-fun dns_rdata () DNSRDATA (Data 1 (CName (Name Nil3 0))))
+)
+(
+(define-fun dns_rdata () DNSRDATA (Data 1 (Null (Cons 1 Nil))))
+)
+(
+(define-fun dns_rdata () DNSRDATA (Data 1 (Null (Cons (- 1) Nil))))
+)
+(
+(define-fun dns_rdata () DNSRDATA (Data 1 (Null (Cons 2 Nil))))
+)
+(
+(define-fun dns_rdata () DNSRDATA (Data 1 (Null (Cons (- 2) Nil))))
+)
+(
+(define-fun dns_rdata () DNSRDATA (Data 1 (Null (Cons 3 Nil))))
+)
+(
+(define-fun dns_rdata () DNSRDATA (Data 1 (CName (Name Nil3 1))))
+)
+(
+(define-fun dns_rdata () DNSRDATA (Data 1 (CName (Name Nil3 (- 1)))))
+)
+(
+(define-fun dns_rdata () DNSRDATA (Data 1 (CName (Name Nil3 2))))
+)
+(
+(define-fun dns_rdata () DNSRDATA (Data 1 (CName (Name Nil3 (- 2)))))
+)
+(
+(define-fun dns_rdata () DNSRDATA (Data 1 (CName (Name Nil3 3))))
+)
+(
+(define-fun dns_rdata () DNSRDATA (Data 1 (TXTDATA (Cons (String 0 Nil) Nil2))))
+)
