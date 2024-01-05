@@ -4,7 +4,7 @@
 
 const char *sygus_command_prefix = "/Users/lorchrob/Documents/CodeProjects/grammar-based_fuzzing/SyGuS-fuzzing/CVC4/build/bin/cvc5 --lang=sygus2";
 
-// Delete sygus temp files when done to clean up
+// Delete file (used to clean up generated temp files)
 int delete_file(const char *filename) {
     if (remove(filename) == 0) {
         printf("Sygus file '%s' deleted successfully.\n\n", filename);
@@ -15,23 +15,7 @@ int delete_file(const char *filename) {
     }
 }
 
-// Given a sygus command prefix, a sygus file to call, and an output file,
-// construct a sygus terminal command
-char *build_sygus_command(const char *str1, const char *str2, const char *str3) {
-    size_t len = strlen(str1) + strlen(str2) + strlen(str3) + 5;
-    char* result = (char*) malloc(len + 1);
-
-    if (result == NULL) {
-        fprintf(stderr, "Memory allocation error\n");
-        exit(EXIT_FAILURE);
-    }
-
-    snprintf(result, len + 1, "%s %s > %s", str1, str2, str3);
-    printf("Sygus command: %s\n", result);
-    return result;
-}
-
-// Copy file 'source' to new file 'dest'
+// Copy file 'source' to new file 'dest' (used to generate temp files)
 void copy_file(const char *source, const char *destination) {
     char command[1024];
     snprintf(command, sizeof(command), "cp %s %s", source, destination);
@@ -41,6 +25,22 @@ void copy_file(const char *source, const char *destination) {
         perror("Error executing cp command");
         exit(EXIT_FAILURE);
     }
+}
+
+// Given a sygus command prefix, a sygus file to call, and an output file,
+// construct a sygus terminal command
+const char *build_sygus_command(const char *str1, const char *str2, const char *str3) {
+    size_t len = strlen(str1) + strlen(str2) + strlen(str3) + 5;
+    char *result = (char*) malloc(len + 1);
+
+    if (result == NULL) {
+        fprintf(stderr, "Memory allocation error\n");
+        exit(EXIT_FAILURE);
+    }
+
+    snprintf(result, len + 1, "%s %s > %s", str1, str2, str3);
+    printf("Sygus command: %s\n", result);
+    return result;
 }
 
 // Call a given number of check-synths on the given sygus file
@@ -62,7 +62,7 @@ int gen_terms(int iterations, const char *sygus_file_dir, const char *sygus_file
     fclose(sygus_file_temp);
 
     // Execute sygus and save its output to a file
-    char* sygus_command = build_sygus_command(sygus_command_prefix, sygus_file_dir_temp, output_dir);
+    const char* sygus_command = build_sygus_command(sygus_command_prefix, sygus_file_dir_temp, output_dir);
     int result = system(sygus_command);
 
     if (result == -1) {
@@ -78,9 +78,24 @@ int gen_terms(int iterations, const char *sygus_file_dir, const char *sygus_file
 }
 
 int main() {
-    gen_terms(10, "../dns/abstract_partition/dns_base.smt2", "../dns/abstract_partition/dns_base_temp.smt2", "./results/dns_base_output.txt");
-    gen_terms(10, "../dns/abstract_partition/dns_domain_name.smt2", "../dns/abstract_partition/dns_domain_name_temp.smt2", "./results/dns_domain_name_output.txt");
-    gen_terms(10, "../dns/abstract_partition/dns_rdata_v2.smt2", "../dns/abstract_partition/dns_rdata_temp.smt2", "./results/dns_rdata_output.txt");
+    gen_terms(
+        10, 
+        "../dns/abstract_partition/dns_base.smt2", 
+        "../dns/abstract_partition/dns_base_temp.smt2", 
+        "./results/dns_base_output.txt"
+    );
+    gen_terms(
+        10, 
+        "../dns/abstract_partition/dns_domain_name.smt2", 
+        "../dns/abstract_partition/dns_domain_name_temp.smt2", 
+        "./results/dns_domain_name_output.txt"
+    );
+    gen_terms(
+        10, 
+        "../dns/abstract_partition/dns_rdata_v2.smt2", 
+        "../dns/abstract_partition/dns_rdata_temp.smt2", 
+        "./results/dns_rdata_output.txt"
+    );
 
     return 0;
 }
