@@ -1,0 +1,30 @@
+(
+(define-fun dns_rdata () DNSRDATA (Data 10 0 (Null Nil)))
+)
+(
+(define-fun dns_rdata () DNSRDATA (Data 16 0 (TXTDATA Nil2)))
+)
+(
+(define-fun dns_rdata () DNSRDATA (Data 1 4 (ADDRESS (Addr 0 0 0 0))))
+)
+(
+(define-fun dns_rdata () DNSRDATA (Data 5 1 (CName (Name Nil3 0))))
+)
+(
+(define-fun dns_rdata () DNSRDATA (Data 10 1 (Null (Cons 0 Nil))))
+)
+(
+(define-fun dns_rdata () DNSRDATA (Data 1 4 (ADDRESS (Addr 0 0 0 1))))
+)
+(
+(define-fun dns_rdata () DNSRDATA (Data 1 4 (ADDRESS (Addr 0 0 0 (- 1)))))
+)
+(
+(define-fun dns_rdata () DNSRDATA (Data 1 4 (ADDRESS (Addr 0 0 0 2))))
+)
+(
+(define-fun dns_rdata () DNSRDATA (Data 1 4 (ADDRESS (Addr 0 0 0 (- 2)))))
+)
+(
+(define-fun dns_rdata () DNSRDATA (Data 1 4 (ADDRESS (Addr 0 0 0 3))))
+)

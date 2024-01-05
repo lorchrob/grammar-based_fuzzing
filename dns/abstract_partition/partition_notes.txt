@@ -1,0 +1,87 @@
+How to create partitions?
+
+High level idea
+  * We want to minimize the scope of each SyGuS query
+  * Draw a graph of dependencies in the grammar, 
+    and each component of the graph is a SyGuS problem
+  * For more complicated grammars like XML, if there is an edge between
+    two nodes, then the two nodes have to share a SyGuS problem including
+    all the way up to their lowest shared datatype(?)
+  * Standard grammar-based fuzzer that outsources work to SyGuS(?)
+
+What are the vertices of the graph?
+  * Every single destructor, primitive or otherwise
+    (basically, every nonterminal on the RHS of the grammar definition)
+
+Drawing edges
+  * It depends on how you formulate the constraints
+  * In XML example, you can formulate constraint as 
+    <xml-open-tag>.<id> = <xml-close-tag>.<id>.
+    So the <xml-open-tag> and <xml-close-tag> are abstracted
+    and combined to a SyGuS problem. We can't directly
+    reference <id> because we need to "remember where we came from",
+    we minimally need the context of <xml-open-tag> and <xml-close-tag>.
+    The user should also specify which instance of <rule>, (i.e., the <xml-open/close-tag>
+    on RHS of rule 1.) 
+    So we draw an edge between those instances of <xml-open-tag> and <xml-close-tag>,
+    and we abstract away their children.
+    
+    If you want to specify further context, you have to go back
+    farther. For example, what if you want to allow the outer-most tags
+    to not be matching? You can say 
+    <inner-xml-tree>.<xml-tree>.<xml-open-tag>.<id> =
+    <inner-xml-tree>.<xml-tree>.<xml-close-tag>.<id>.
+    Then <inner-xml-tree> is abstracted.
+  * In some situations, you just need a <domain-name>, but in other cases you also
+    need the length, or character string + length, etc. How to treat this 
+    uniformly? I think we need to specify which grammar RHS elements are abstracted.
+    In this case, we have separate instances of <domain-name> on the RHS,
+    so we have just a <domain-name> SyGuS problem, and also a <domain-name> + length
+    SyGuS problem. So we need to update dns_base to not Stub out an entire RHS,
+    but individual elements of each RHS (like in the XML example)
+
+Separate SyGuS problems, difficulties
+  * In DNS example, it's clear that you can split the grammar and recombine,
+    as fields are mostly fixed and mandatory. The grammar is not "recursive"
+    except for lists.
+  * In XML example, it's less clear, the grammar is more free form
+  * With free form/recursive grammars, it isn't clear how to combine the pieces,
+    because we don't know how everything fits together. Maybe we use a standard
+    grammar-based fuzzer to create the general structure, and we fill in the gaps
+    with SyGuS.
+  * There could be situations where there is stuff "below" the SyGuS constraint
+    that is not dependent on SyGuS stuff.  Example-- xml-attribute tag. 
+    So for complicated examples, 
+    there might need to be some nontrivial collaboration between SyGuS and the 
+    standard grammar-based fuzzer.
+  * Standard grammar-based fuzzer (SGBF) creates holes for SyGuS. 
+    SyGuS creates holes for SGBF.
+  * How to determine where to leave holes? Shared prefixes in constraint?
+  
+  ;;!! When parsing output, we want to fill in < Stub1, Stub2 > pairs.
+;;!! how to match each Stub1 with the corresponding Stub2 (in a generalizable way)? 
+;;!! There could be multiple of each.
+
+;;!! Maybe we actually abstract LHS <xml-tree> element. We specifically want to say that
+;;!! for an xml-tree, the open tag equals the close tag, NOT that every open tag
+;;!! equals every close tag. 
+;;!! In this example, everything is abstracted to SyGuS, which then passes the buck back to 
+;;!! SGBF.
+
+;;!! At a high level, each Stub needs to capsulate the __entire__ SyGuS problem.
+;;!! Still need to think about LHS vs RHS abstraction, and XML vs DNS examples.
+;;!! Maybe we allow either-- If we have a unary constraint over a single RHS
+;;!! element, maybe we abstract the RHS. But if we have an n-ary constraint,
+;;!! we need to specify the common ancestor Stub point. If it is EVERY (eg)
+;;!! xml-tree, it is a LHS thing.
+
+  * What if there are constraints inside constraints? Like a bigger abstraction/stub
+    covers 1 constraint, but its subfields have constraints? Clearly we must put a 
+    stub on the bigger constraint.
+    I think we have to analyze how the constraints interact.
+    If the subconstraint is completely blocked by stubs in the top constraint (SyGuS
+    file stubs for SGBF),
+    then they can (maybe) be treated independently. Otherwise, they must be combined.
+  * What if constraints interact? Like constraint 1 mentions <A> and <B>, constraint 2
+    mentions <B> and <C>. 
+    Clearly, we have to group them into the same SyGuS problem.

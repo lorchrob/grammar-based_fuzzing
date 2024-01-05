@@ -1,0 +1,30 @@
+(
+(define-fun domain_name () Top (Name Nil2))
+)
+(
+(define-fun domain_name () Top (Name (Pointer 0)))
+)
+(
+(define-fun domain_name () Top (Name (Pointer 1)))
+)
+(
+(define-fun domain_name () Top (Name (Pointer (- 1))))
+)
+(
+(define-fun domain_name () Top (Name (Pointer 2)))
+)
+(
+(define-fun domain_name () Top (Name (Pointer (- 2))))
+)
+(
+(define-fun domain_name () Top (Name (Pointer 3)))
+)
+(
+(define-fun domain_name () Top (Name (Cons2 (Label 0 Nil) Nil2)))
+)
+(
+(define-fun domain_name () Top (Name (Pointer (- 3))))
+)
+(
+(define-fun domain_name () Top (Name (Pointer 4)))
+)
