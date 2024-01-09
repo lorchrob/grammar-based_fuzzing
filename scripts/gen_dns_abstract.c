@@ -4,6 +4,42 @@
 
 const char *sygus_command_prefix = "/Users/lorchrob/Documents/CodeProjects/grammar-based_fuzzing/SyGuS-fuzzing/CVC4/build/bin/cvc5 --lang=sygus2";
 
+// Remove unneeded lines with single parens from sygus output
+void clean_output_file(char* filename) {
+    FILE* inputFile = fopen(filename, "r");
+    FILE* tempFile = fopen("temp.txt", "w");
+
+    if (inputFile == NULL || tempFile == NULL) {
+        perror("Error opening files");
+        exit(EXIT_FAILURE);
+    }
+
+    char buffer[256];
+
+    while (fgets(buffer, sizeof(buffer), inputFile)) {
+        // Remove newline character
+        buffer[strcspn(buffer, "\n")] = '\0';
+
+        // Check if the line is only a single character long
+        if (strlen(buffer) > 1) {
+            // Remove instances of a given keyword
+            // char* occurrence = strstr(buffer, "DNSMessage");
+            // while (occurrence != NULL) {
+            //     *occurrence = ' '; // Replace with a space
+            //     occurrence = strstr(buffer, "DNSMessage");
+            // }
+
+            fprintf(tempFile, "%s\n", buffer);
+        }
+    }
+
+    fclose(inputFile);
+    fclose(tempFile);
+
+    remove(filename);
+    rename("temp.txt", filename);
+}
+
 // Delete file (used to clean up generated temp files)
 int delete_file(const char *filename) {
     if (remove(filename) == 0) {
@@ -79,23 +115,28 @@ int gen_terms(int iterations, const char *sygus_file_dir, const char *sygus_file
 
 int main() {
     gen_terms(
-        10, 
+        50, 
         "../dns/abstract_partition/dns_base.smt2", 
         "../dns/abstract_partition/dns_base_temp.smt2", 
         "./results/dns_base_output.txt"
     );
     gen_terms(
-        10, 
+        50, 
         "../dns/abstract_partition/dns_domain_name.smt2", 
         "../dns/abstract_partition/dns_domain_name_temp.smt2", 
         "./results/dns_domain_name_output.txt"
     );
     gen_terms(
-        10, 
+        50, 
         "../dns/abstract_partition/dns_rdata_v2.smt2", 
         "../dns/abstract_partition/dns_rdata_temp.smt2", 
         "./results/dns_rdata_output.txt"
     );
+
+    clean_output_file("results/dns_base_output.txt");
+    clean_output_file("results/dns_domain_name_output.txt");
+    clean_output_file("results/dns_rdata_output.txt");
+
 
     return 0;
 }
