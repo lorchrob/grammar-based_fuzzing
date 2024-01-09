@@ -7,7 +7,7 @@
 //!! ISSUES
 /*
   1. Only subbing in dns_domain_name_output, not other outputs
-  2. Getting garbage from dns_domain_name_output, e.g. lines that are only a single paren
+  2. Getting garbage from dns_domain_name_output, e.g. extra keywords
 */
 
 int main() {

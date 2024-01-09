@@ -14,7 +14,7 @@ void clean_output_file(char* filename) {
         exit(EXIT_FAILURE);
     }
 
-    char buffer[256];
+    char buffer[1024];
 
     while (fgets(buffer, sizeof(buffer), inputFile)) {
         // Remove newline character
