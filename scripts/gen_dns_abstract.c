@@ -83,7 +83,7 @@ const char *build_sygus_command(const char *str1, const char *str2,
 }
 
 // Call a given number of check-synths on the given sygus file
-// and save the results
+// and save the. results
 int gen_terms(int iterations, const char *sygus_file_dir,
               const char *sygus_file_dir_temp, const char *output_dir) {
   copy_file(sygus_file_dir, sygus_file_dir_temp);
@@ -122,21 +122,21 @@ int gen_terms(int iterations, const char *sygus_file_dir,
 int main() {
   gen_terms(50, "../dns/abstract_partition/dns_base.smt2",
             "../dns/abstract_partition/dns_base_temp.smt2",
-            "./results/dns_base_output.txt");
+            "../results/dns_base_output.txt");
   gen_terms(50, "../dns/abstract_partition/dns_domain_name.smt2",
             "../dns/abstract_partition/dns_domain_name_temp.smt2",
-            "./results/dns_domain_name_output.txt");
+            "../results/dns_domain_name_output.txt");
   gen_terms(50, "../dns/abstract_partition/dns_rdata_v2.smt2",
             "../dns/abstract_partition/dns_rdata_temp.smt2",
-            "./results/dns_rdata_output.txt");
+            "../results/dns_rdata_output.txt");
   gen_terms(50, "../dns/abstract_partition/dns_ttl.smt2",
             "../dns/abstract_partition/dns_ttl_temp.smt2",
-            "./results/dns_ttl_output.txt");
+            "../results/dns_ttl_output.txt");
 
-  clean_output_file("results/dns_base_output.txt");
-  clean_output_file("results/dns_domain_name_output.txt");
-  clean_output_file("results/dns_rdata_output.txt");
-  clean_output_file("results/dns_ttl_output.txt");
+  clean_output_file("../results/dns_base_output.txt");
+  clean_output_file("../results/dns_domain_name_output.txt");
+  clean_output_file("../results/dns_rdata_output.txt");
+  clean_output_file("../results/dns_ttl_output.txt");
 
   return 0;
 }
