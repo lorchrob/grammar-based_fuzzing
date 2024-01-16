@@ -8,11 +8,11 @@ int main() {
   FILE *dns_base_file, *domain_name_file, *rdata_file, *ttl_file, *output_file;
   char *line1, line2[MAX_LINE_LENGTH], *modified_line;
 
-  dns_base_file = fopen("../results/dns_base_output_long.txt", "r");
-  domain_name_file = fopen("../results/dns_domain_name_output_long.txt", "r");
-  rdata_file = fopen("../results/dns_rdata_output_long.txt", "r");
-  ttl_file = fopen("../results/dns_ttl_output_long.txt", "r");
-  output_file = fopen("../results/dns_combined.txt", "w");
+  dns_base_file = fopen("../results/dns_base_output_clean.txt", "r");
+  domain_name_file = fopen("../results/dns_domain_name_output_clean.txt", "r");
+  rdata_file = fopen("../results/dns_rdata_output_clean.txt", "r");
+  ttl_file = fopen("../results/dns_ttl_output_clean.txt", "r");
+  output_file = fopen("../results/dns_full_abstract.txt", "w");
 
   if (dns_base_file == NULL || domain_name_file == NULL ||
       output_file == NULL) {
