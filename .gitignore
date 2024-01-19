@@ -1,3 +1,10 @@
 CVC4/
 scripts/a.out
 .DS_Store
+scripts/dns_abstract_parse/calc
+scripts/dns_abstract_parse/*.cmi
+scripts/dns_abstract_parse/*.cmo
+scripts/dns_abstract_parse/lexer.ml
+scripts/dns_abstract_parse/parser.ml
+scripts/dns_abstract_parse/*.mli
+scripts/__pycache__/
