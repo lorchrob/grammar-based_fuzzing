@@ -1,5 +1,3 @@
-### TODO: remove "define-fun name () Type" stuff too, just for my sanity
-
 import re
 
 def remove_let_def(input_text):
