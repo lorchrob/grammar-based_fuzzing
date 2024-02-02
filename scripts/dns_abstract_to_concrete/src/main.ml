@@ -1,100 +1,108 @@
 open Ast
 
-(* TODO: Refactor Uint64.of_int p |> Uint64.to_string_bin into a separate function.
-   Add all the integers to a list, then convert + concat all during the fold. 
-   *)
-
-(** [parse s] parses [s] into an AST. *)
+(* Parse input string into an AST *)
 let parse (s : string) : dns_message =
   let lexbuf = Lexing.from_string s in
   Parser.prog Lexer.read lexbuf
 
+let pad_or_trim_bv_string (width: int) (bv_str: string) : string =
+  (* Remove '0b' prefix *)
+  let bv_str = String.sub bv_str 2 (String.length bv_str - 2) in 
+  let len = String.length bv_str in
+  if len > width then
+    failwith "Bitvector is bigger than its associated bit width"
+  else
+    let num_zeros_to_prepend = width - len in
+    let zeros = String.make num_zeros_to_prepend '0' in
+    zeros ^ bv_str
+
 let uint_to_str (width : int) (i : int) : string = 
+  (* For some reason, the Uint module will not prepend '0b' 
+     to 0, so we have to handle it specially *)
+  if i = 0 then String.make width '0' else
   match width with
-  | 64 -> Uint64.of_int i |> Uint64.to_string_bin
-  | 32 -> Uint32.of_int i |> Uint32.to_string_bin
-  | 16 -> Uint16.of_int i |> Uint16.to_string_bin
-  | _ -> failwith "Bit width not supported yet"
+  | 64 ->         Uint64.of_int i |> Uint64.to_string_bin |> pad_or_trim_bv_string width
+  | 32 ->         Uint32.of_int i |> Uint32.to_string_bin |> pad_or_trim_bv_string width
+  | 16 ->         Uint16.of_int i |> Uint16.to_string_bin |> pad_or_trim_bv_string width
+  | 8 | 4 | 3  -> Uint8.of_int  i |> Uint8.to_string_bin  |> pad_or_trim_bv_string width
+  | _  -> failwith "Bit width not supported yet"
 
 let convert_header (id, qr, op_code, aa, tc, rd, ra, z, rcode, qd_count, an_count, ns_count, ar_count : dns_header) 
   : string = 
-  let id =  uint_to_str 64 id in 
-  let qr = uint_to_str 64 qr in 
-  let op_code = uint_to_str 64 op_code in
+  let id =  uint_to_str 16 id in 
+  let qr = uint_to_str 16 qr in 
+  let op_code = uint_to_str 4 op_code in
   let aa = (if aa then "1" else "0") in 
   let tc = (if tc then "1" else "0") in 
   let rd = (if rd then "1" else "0") in 
   let ra = (if ra then "1" else "0") in 
-  let z = uint_to_str 64 z in 
-  let rcode = uint_to_str 64 rcode in 
-  let qd_count = uint_to_str 64 qd_count in 
-  let an_count = uint_to_str 64 an_count in 
-  let ns_count = uint_to_str 64 ns_count in 
-  let ar_count = uint_to_str 64 ar_count in 
+  let z = uint_to_str 3 z in 
+  let rcode = uint_to_str 4 rcode in 
+  let qd_count = uint_to_str 16 qd_count in 
+  let an_count = uint_to_str 16 an_count in 
+  let ns_count = uint_to_str 16 ns_count in 
+  let ar_count = uint_to_str 16 ar_count in 
   let lst = [ id; qr; op_code; aa; tc; rd; ra; z; rcode; qd_count; an_count; ns_count; ar_count ] in 
   List.fold_left (^) "" lst 
 
 let convert_label (len, octets : label) : string = 
-  let len = uint_to_str 64 len in 
-  let octets = List.map (uint_to_str 64) octets in 
+  let len = uint_to_str 8 len in 
+  let octets = List.map (uint_to_str 8) octets in 
   let lst = len :: octets in 
   List.fold_left (^) "" lst 
 
 let convert_address (fst, snd, thd, fth : address) : string = 
-  let fst = uint_to_str 64 fst in 
-  let snd = uint_to_str 64 snd in 
-  let thd = uint_to_str 64 thd in 
-  let fth = uint_to_str 64 fth in 
+  let fst = uint_to_str 8 fst in 
+  let snd = uint_to_str 8 snd in 
+  let thd = uint_to_str 8 thd in 
+  let fth = uint_to_str 8 fth in 
   let lst = [ fst; snd; thd; fth ] in 
   List.fold_left (^) "" lst
 
 let rec convert_labels (labels : label_list) : string = 
   match labels with 
   | Nil -> ""
-  | Pointer p -> uint_to_str 64 p  
+  | Pointer p -> uint_to_str 16 p  
   | Cons (label, labels) -> convert_label label ^ convert_labels labels
 
-let convert_r_data_payload (r_data_payload : r_data_payload) : string = 
+(* TODO: Generate 'type' field *)
+let convert_r_data_payload (r_data_payload : r_data_payload) : string * string = 
   match r_data_payload with 
   | WKS (address, protocol, bitmap) -> 
     let address = convert_address address in 
-    let protocol = uint_to_str 64 protocol in 
-    let bitmap = List.map (uint_to_str 64) bitmap in  
+    let protocol = uint_to_str 8 protocol in 
+    let bitmap = List.map (uint_to_str 8) bitmap in  
     let lst = address :: protocol :: bitmap in 
-    List.fold_left (^) "" lst
+    let type_ = uint_to_str 16 11 in
+    type_, List.fold_left (^) "" lst
   | Null octets -> 
-    let lst = List.map (uint_to_str 64) octets in 
-    List.fold_left (^) "" lst
+    let lst = List.map (uint_to_str 8) octets in 
+    let type_ = uint_to_str 16 10 in
+    type_, List.fold_left (^) "" lst
   | CName _ | HInfo _ | MInfo _ | MX _ | SOA _ | TXTDATA _ | Address _ -> failwith "RDATA payload type not supported yet"
 
 let convert_domain_name ((labels, term) : domain_name) : string = 
   let labels = convert_labels labels in 
-  let term = uint_to_str 64 term in 
+  let term = uint_to_str 8 term in 
   let lst = [ term; labels ] in
   List.fold_left (^) "" lst
 
-(* TODO: Generate 'type' field *)
-let convert_r_data (rd_length, r_data_payload: r_data) = 
-  let rd_length = uint_to_str 64 rd_length in 
-  let r_data_payload = convert_r_data_payload r_data_payload in 
-  let lst = [ rd_length; r_data_payload ] in 
-  List.fold_left (^) "" lst 
 
 let convert_question (domain_name, q_type, q_class : dns_question) : string = 
   let domain_name = convert_domain_name domain_name in 
-  let q_type = uint_to_str 64 q_type in 
-  let q_class = uint_to_str 64 q_class in 
+  let q_type = uint_to_str 16 q_type in 
+  let q_class = uint_to_str 16 q_class in 
   let lst = [ domain_name; q_type; q_class ] in 
   List.fold_left (^) "" lst
 
-let convert_record (domain_name, type_, class_, ttl, rd_length, r_data : resource_record) : string = 
+(* rdlength and type were duplicated, so we ignore it here*)
+let convert_record (domain_name, _, class_, ttl, _, (rd_length, r_data_payload) : resource_record) : string = 
   let domain_name = convert_domain_name domain_name in 
-  let type_ = uint_to_str 64 type_ in 
-  let class_ = uint_to_str 64 class_ in 
-  let ttl = uint_to_str 64 ttl in 
-  let rd_length = uint_to_str 64 rd_length in 
-  let r_data = convert_r_data r_data in
-  let lst = [ domain_name; type_; class_; ttl; rd_length; r_data ] in 
+  let class_ = uint_to_str 16 class_ in 
+  let ttl = uint_to_str 32 ttl in 
+  let rd_length = uint_to_str 16 rd_length in 
+  let type_, r_data_payload = convert_r_data_payload r_data_payload in 
+  let lst = [ domain_name; type_; class_; ttl; rd_length; r_data_payload ] in 
   List.fold_left (^) "" lst
 
 let convert_dns_packet (header, question, rec1, rec2, rec3 : dns_message) : string =
