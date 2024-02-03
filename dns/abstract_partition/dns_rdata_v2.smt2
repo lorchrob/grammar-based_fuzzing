@@ -208,8 +208,3 @@
 (constraint (valid_rdata_lengths dns_rdata))
 
 ;;;; SyGuS synthesis command
-(check-synth)
-(check-synth)
-(check-synth)
-(check-synth)
-(check-synth)

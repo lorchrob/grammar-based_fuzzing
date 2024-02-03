@@ -83,7 +83,7 @@ const char *build_sygus_command(const char *str1, const char *str2,
 }
 
 // Call a given number of check-synths on the given sygus file
-// and save the. results
+// and save the results
 int gen_terms(int iterations, const char *sygus_file_dir,
               const char *sygus_file_dir_temp, const char *output_dir) {
   copy_file(sygus_file_dir, sygus_file_dir_temp);

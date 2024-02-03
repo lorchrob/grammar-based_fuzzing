@@ -110,7 +110,7 @@ let convert_dns_packet (header, question, rec1, rec2, rec3 : dns_message) : stri
   convert_record rec1 ^ convert_record rec2 ^ convert_record rec3
 
 (* Main function *)
-let () = 
+let main () = 
   let input = "(define-fun dns_message () DNSMessage (Message (Header 0 0 0 false true true true 0 0 0 0 0 0) (Question (Name (Name (Pointer 13)) 0) 0 0) (Record (Name (Name (Pointer 14)) 0) 0 0 (Message 22) 0 (Data 8 (WKS (Addr 0 0 0 0) 0 Nil))) (Record (Name (Name (Pointer 14)) 0) 0 0 (Message 23) 0 (Data 1 (Null (Cons 3 Nil)))) (Record (Name (Name (Pointer 15)) 0) 0 0 (Message 24) 0 (Data 1 (Null (Cons 4 Nil))))))" in 
   let ast = parse input in 
   let packet = convert_dns_packet ast in 
