@@ -52,37 +52,9 @@
   )
 ))
 
-;;; grammar
-(synth-fun dns_message () DNSMessage
-  ; declare non-terminals
-  (
-    (message DNSMessage) 
-    (header DNSHeader) 
-    (question DNSQuestion) 
-    (record ResourceRecord) 
-    (name DomainName) 
-    (labels LabelList) 
-    (label Label)
-    (octets OctetList) 
-    (num Int)
-    (bool Bool)
-  ) 
-  ; grammar rules
-  (
-    (message DNSMessage        ((Message header question record record record)))
-    (header  DNSHeader         ((Header num num num bool bool bool bool num num num num num num)))
-    (question DNSQuestion      ((Question name num num)))
-    (record ResourceRecord     ((Record name num num num num octets)))
-    (name DomainName           ((Name labels num)))
-    (labels LabelList          (Nil2 (Cons2 label labels)))
-    (label Label               ((Label num octets)))
-    (octets OctetList          (Nil (Cons num octets)))
-    (num Int                   ((Constant Int)))
-    (bool Bool                 ((Constant Bool)))
-  )
-)
-
 ;;; Constraints
+(declare-const dns_message DNSMessage)
 
 ;;; SyGuS synthesis command
-(check-synth)
+(check-sat)
+(get-model)

@@ -18,7 +18,7 @@ let gen_terms (num_calls : int) (smt_filename : string) (smt_temp_filename : str
   let _ = Sys.command ("rm " ^ smt_temp_filename) in 
   ()
 
-let () = 
+let main () = 
   let _ = gen_terms 50 "../../dns/abstract_partition/dns_base.smt2" 
                        "../../dns/abstract_partition/dns_base_temp.smt2"
                        "../../results/dns_base_output.txt" in
