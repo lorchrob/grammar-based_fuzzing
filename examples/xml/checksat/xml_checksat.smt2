@@ -34,38 +34,9 @@
   )
 ))
 
-;;; grammar
-(synth-fun xml () XmlTree
-  ; declare non-terminals
-  (
-    (xmltree XmlTree) (xmlattribute XmlAttribute) (xmlopenclosetag XmlOpenCloseTag) (xmlclosetag XmlCloseTag) 
-    (xmlopentag XmlOpenTag) (innerxmltree InnerXmlTree) (str String)
-  ) 
-  ; grammar rules
-  (
-    (xmltree XmlTree                 (
-                                      (Branch xmlopentag innerxmltree xmlclosetag)))
-
-    (xmlattribute XmlAttribute       ((IdText str str)
-                                      (AttribAttrib xmlattribute xmlattribute)))
-
-    (xmlopenclosetag XmlOpenCloseTag ((Id1 str)
-                                      (IdAttrib str xmlattribute)))
-
-    (xmlclosetag XmlCloseTag         ((Id2 str))) 
-
-    (xmlopentag XmlOpenTag           ((Id3 str)
-                                      (IdAttrib2 str xmlattribute)))
-
-    (innerxmltree InnerXmlTree       ((Desc str)
-                                      (Tree xmltree)
-                                      (Trees innerxmltree innerxmltree)))
-
-    (str String                      ((Constant String)))
-  )
-)
-
 ;;; constraints
+(declare-const xml XmlTree)
+
 ; Paired XML open/close tags should match
 (define-fun branch-constraint ((open XmlOpenTag) (close XmlCloseTag)) Bool
   (match open (
@@ -91,20 +62,9 @@
 (define-fun-rec matching-tags ((xml XmlTree)) Bool
   (xml-tree-constraint xml)
 )
-(constraint (matching-tags xml))
-
-;;; Exclude some examples
+(assert (matching-tags xml))
 
 ;;; SyGuS synthesis command
-(check-synth)
-(check-synth)
-(check-synth)
-(check-synth)
-(check-synth)
-(check-synth)
-(check-synth)
-(check-synth)
-(check-synth)
-(check-synth)
-(check-synth)
+(check-sat)
+(get-model)
 

@@ -5,7 +5,7 @@
 ;;!!! abstract terms that can map to packets.
 
 ;;; logic
-(set-logic LIA)
+(set-logic ALL)
 ;(set-feature :oracles true)
 
 ;;; data-types
@@ -58,3 +58,4 @@
 ;;; SyGuS synthesis command
 (check-sat)
 (get-model)
+
