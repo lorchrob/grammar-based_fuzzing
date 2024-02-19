@@ -2,4 +2,3 @@ CVC4/
 scripts/a.out
 .DS_Store
 examples/__pycache__/
-SyGuS-fuzzing/automation/gbf/_build/*

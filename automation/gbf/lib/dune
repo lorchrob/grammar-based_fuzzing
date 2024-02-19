@@ -1,0 +1,7 @@
+(library
+ (name gbf))
+
+(menhir
+ (modules parser))
+
+(ocamllex lexer)
