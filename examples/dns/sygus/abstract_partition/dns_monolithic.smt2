@@ -2,31 +2,26 @@
 (set-logic LIA)
 ;(set-feature :oracles true)
 
-;;; data-types
-(declare-datatype OctetList (
-  (Nil)
-  (Cons (Head Int) (Tail OctetList))
-))
-
-(declare-datatype Label (
-  (Label (Length Int) (Octets OctetList))
-))
-
-(declare-datatype LabelList (
-  (Nil2)
-  (Cons2 (Head Label) (Tail LabelList))
+;;; datatypes
+(declare-datatype LabelListStub (
+  (LabelListStub)
 ))
 
 (declare-datatype DomainName (
-  (Name (Labels LabelList) (Termination Int))
+  (Name (Labels LabelListStub) (Termination Int))
 ))
 
 (declare-datatype DNSQuestion (
   (Question (QNAME DomainName) (QTYPE Int) (QCLASS Int))
 ))
 
+(declare-datatype RDataStub (
+  (RDataStub)
+))
+
 (declare-datatype ResourceRecord (
-  (Record (NAME DomainName) (TYPE Int) (CLASS Int) (TTL Int) (RDLENGTH Int) (RDATA OctetList))
+  (Record (NAME DomainName) (TYPE Int) (CLASS Int) (TTL Int) 
+          (RDLENGTH Int) (RDATA RDataStub))
 ))
 
 (declare-datatype DNSHeader (
@@ -39,6 +34,7 @@
 
 (declare-datatype DNSMessage (
   (Message (Header DNSHeader) 
+  ;;!! Should be lists
     (Question DNSQuestion) 
     (Answer ResourceRecord) 
     (Authority ResourceRecord) 
@@ -55,42 +51,33 @@
     (question DNSQuestion) 
     (record ResourceRecord) 
     (name DomainName) 
-    (labels LabelList) 
-    (label Label)
-    (octets OctetList) 
     (num Int)
     (bool Bool)
   ) 
   ; grammar rules
   (
     (message DNSMessage        ((Message header question record record record)))
-    (header  DNSHeader         ((Header num num num bool bool bool bool num num num num num num)))
+    (header  DNSHeader         ((Header num num num bool bool bool bool 0 num num num num num)))
     (question DNSQuestion      ((Question name num num)))
-    (record ResourceRecord     ((Record name num num num num octets)))
-    (name DomainName           ((Name labels num)))
-    (labels LabelList          (Nil2 (Cons2 label labels)))
-    (label Label               ((Label num octets)))
-    (octets OctetList          (Nil (Cons num octets)))
+    (record ResourceRecord     ((Record name num num num num RDataStub)))
+    (name DomainName           ((Name LabelListStub 0)))
     (num Int                   ((Constant Int)))
     (bool Bool                 ((Constant Bool)))
   )
 )
 
-;;; Constraints
 
-;;; SyGuS synthesis command
+;(define-fun ttl_constraint ((rec ResourceRecord)) Bool 
+;  (match rec (
+;    ((Record name type class ttl rdlength rdata) (>= ttl 0))
+;  ))
+;)
+;(define-fun c1 ((message DNSMessage)) Bool
+;  (match message (
+;    ((Message header question answer auth add) (and (ttl_constraint answer) (ttl_constraint auth) (ttl_constraint add)))
+;  ))
+;)
+;(constraint (c1 dns_message))
+
 (check-synth)
-(check-synth-next)
-(check-synth-next)
-(check-synth-next)
-(check-synth-next)
-(check-synth-next)
-(check-synth-next)
-(check-synth-next)
-(check-synth-next)
-(check-synth-next)
-(check-synth-next)
-(check-synth-next)
-(check-synth-next)
-(check-synth-next)
 (check-synth-next)

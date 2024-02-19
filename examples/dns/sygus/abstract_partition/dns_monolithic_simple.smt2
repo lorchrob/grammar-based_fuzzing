@@ -2,7 +2,7 @@
 (set-logic LIA)
 ;(set-feature :oracles true)
 
-;;; data-types
+;;; datatypes
 (declare-datatype OctetList (
   (Nil)
   (Cons (Head Int) (Tail OctetList))
@@ -77,20 +77,17 @@
 )
 
 ;;; Constraints
+(define-fun ttl_constraint ((rec ResourceRecord)) Bool 
+  (match rec (
+    ((Record name type class ttl rdlength rdata) (>= ttl 0))
+  ))
+)
+(define-fun c1 ((message DNSMessage)) Bool
+  (match message (
+    ((Message header question answer auth add) (and (ttl_constraint answer) (ttl_constraint auth) (ttl_constraint add)))
+  ))
+)
+(constraint (c1 dns_message))
 
 ;;; SyGuS synthesis command
 (check-synth)
-(check-synth-next)
-(check-synth-next)
-(check-synth-next)
-(check-synth-next)
-(check-synth-next)
-(check-synth-next)
-(check-synth-next)
-(check-synth-next)
-(check-synth-next)
-(check-synth-next)
-(check-synth-next)
-(check-synth-next)
-(check-synth-next)
-(check-synth-next)

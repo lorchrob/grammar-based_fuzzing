@@ -28,6 +28,13 @@ let main () =
   let _ = gen_terms 50 "../../dns/abstract_partition/dns_rdata_v2.smt2" 
                        "../../dns/abstract_partition/dns_rdata_v2_temp.smt2" 
                        "../../results/dns_rdata_output.txt" in
-          gen_terms 50 "../../dns/abstract_partition/dns_ttl.smt2" 
+  let _ = gen_terms 50 "../../dns/abstract_partition/dns_ttl.smt2" 
                        "../../dns/abstract_partition/dns_ttl_temp.smt2"
-                       "../../results/dns_ttl_output.txt"
+                       "../../results/dns_ttl_output.txt" in
+
+
+
+  let _ = gen_terms 50 "../../dns/abstract_partition/dns_monolithic.smt2" 
+                       "../../dns/abstract_partition/dns_monolithic_temp.smt2" 
+                       "../../results/dns_rdata_output.txt" in
+          ()
